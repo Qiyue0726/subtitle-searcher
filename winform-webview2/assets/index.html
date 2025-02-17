@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subtitle Searcher</title>
+    <link href="layui/css/layui.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- HTML Content -->
+    <div class="layui-container" style="margin-top: 10px;">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-input-inline" style="width: 59%">
+                    <input type="text" name="name" lay-affix="clear" placeholder="电影名" autocomplete="off" class="layui-input" id="movie-name-input">
+                </div>
+                <button class="layui-btn" lay-submit="" lay-filter="search" id="search-button">
+                    <i class="layui-icon layui-icon-search layui-font-14"></i>&nbsp;&nbsp;搜索
+                </button>
+            </div>
+        </div>
+        <table id="subtitleTable" lay-filter="subtitleTable"></table>
+    </div>
+
+    <script src="layui/layui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            layui.use(['form', 'table', 'jquery', 'layer'], function () {
+                var form = layui.form;
+                var table = layui.table;
+                var $ = layui.jquery;
+                var layer = layui.layer;
+
+                // 监听输入框的 keydown 事件
+                $('#movie-name-input').on('keydown', function (e) {
+                    if (e.keyCode === 13) { // 回车键的键码是 13
+                        $('#search-button').click(); // 模拟点击搜索按钮
+                    }
+                });
+
+                // 渲染表格
+                table.render({
+                    elem: '#subtitleTable',
+                    data: [],
+                    height: 345,
+                    text: { none: '无相关字幕，建议换名搜索' },
+                    cols: [[
+                        { field: 'name', title: '字幕名', align: 'center', width: '60%' },
+                        {
+                            field: 'languages', title: '语言', templet: function (d) {
+                                return d.languages.join('&');
+                            }, align: 'center', width: '20%'
+                        },
+                        {
+                            field: 'url', title: '操作', templet: function (d) {
+                                // 初始状态显示下载按钮
+                                return '<button class="layui-btn layui-btn-xs" onclick="window.downloadSubtitle(\'' + d.url + '\', \'' + d.name + '\', this)">下载</button>';
+                            }, align: 'center', width: '20%'
+                        }
+                    ]]
+                });
+
+                // 监听搜索表单提交事件
+                form.on('submit(search)', async function (data) {
+                    var name = data.field.name;
+                    if (!name) {
+                        layer.msg('请输入电影名', { icon: 5 });
+                        return false;
+                    }
+                    var apiUrl = 'https://api-shoulei-ssl.xunlei.com/oracle/subtitle?name=' + name;
+                    try {
+                        const res = JSON.parse(await window.chrome.webview.hostObjects.winFormProxy.MakeApiRequest(apiUrl))
+                        if (res.code === 0) {
+                            // 重新加载表格数据
+                            table.reload('subtitleTable', {
+                                data: res.data
+                            });
+                        } else {
+                            layer.msg('搜索失败：' + res.result, { icon: 5 });
+                        }
+                    } catch (error) {
+                        layer.msg('请求出错：' + error.message, { icon: 5 });
+                    }
+
+                    return false;
+                });
+
+                // 将函数挂载到 window 对象上
+                window.downloadSubtitle = async function (url, name, button) {
+                    try {
+                        // 调用后台下载方法，并重命名为字幕名
+                        const result = await window.chrome.webview.hostObjects.winFormProxy.Download(url, name);
+                        if (result) {
+                            // 下载成功，更新按钮状态
+                            $(button).text('显示');
+                            $(button).addClass('layui-bg-blue');
+                            $(button).attr('onclick', 'window.openFolder(this)');
+                        } else {
+                            layer.msg('下载失败', { icon: 5 });
+                        }
+                    } catch (error) {
+                        layer.msg('下载出错：' + error.message, { icon: 5 });
+                    }
+                }
+
+                window.openFolder = async function (button) {
+                    try {
+                        // 调用后台打开文件夹方法
+                        window.chrome.webview.hostObjects.winFormProxy.OpenFolder();
+                    } catch (error) {
+                        layer.msg('打开文件夹出错：' + error.message, { icon: 5 });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

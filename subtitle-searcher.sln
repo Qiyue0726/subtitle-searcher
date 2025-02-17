@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winform", "winform\winform.csproj", "{9A00E10A-60F5-4C96-9BFC-340B8B4995FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winform-webview2", "winform-webview2\winform-webview2.csproj", "{A380DB75-CF5C-44E8-9D1D-2BF9533F01E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9A00E10A-60F5-4C96-9BFC-340B8B4995FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A00E10A-60F5-4C96-9BFC-340B8B4995FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A00E10A-60F5-4C96-9BFC-340B8B4995FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A380DB75-CF5C-44E8-9D1D-2BF9533F01E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A380DB75-CF5C-44E8-9D1D-2BF9533F01E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A380DB75-CF5C-44E8-9D1D-2BF9533F01E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A380DB75-CF5C-44E8-9D1D-2BF9533F01E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
